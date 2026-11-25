@@ -86,13 +86,14 @@ def main() -> int:
     path = os.path.join(output_dir, "entry.txt")
     with open(path, "w", encoding="utf-8", newline="\n") as f:
         f.write(ENTRY + "\n")
-    # Re-read what was written and validate the artifact itself.
+    # Re-read what was written and validate the artifact itself: the
+    # file must be exactly the entry plus one trailing newline — a
+    # splitlines check alone would also accept a missing newline.
     with open(path, encoding="utf-8") as f:
         written = f.read()
-    lines = written.splitlines()
-    if len(lines) != 1 or lines[0] != ENTRY:
-        raise ValueError("written entry.txt does not match the entry")
-    validate(lines[0])
+    if written != ENTRY + "\n":
+        raise ValueError("written entry.txt must be exactly the entry plus one newline")
+    validate(written.rstrip("\n"))
     print(f"Wrote {path} ({len(ENTRY)} characters)")
     return 0
 
